@@ -1,10 +1,11 @@
-import config
 import os
 import numpy as np
 import pickle
 
+from config import opt
 
-def load_word_vec(path=config.vec_path, word2idx=None):  # 只加载语料 vocab 中出现过的词
+
+def load_word_vec(path=opt.vec_path, word2idx=None):  # 只加载语料 vocab 中出现过的词
     assert os.path.exists(path)
     with open(path, 'r', encoding='utf-8', newline='\n', errors='ignore') as fin:
         word2vec = {}
@@ -16,14 +17,14 @@ def load_word_vec(path=config.vec_path, word2idx=None):  # 只加载语料 vocab
 
 
 def build_embedding_matrix(word2idx,embed_dim=300, d_type='dataset'):  # 按 vocab 顺序保存 embedding_matrix
-    embedding_matrix_file_name = '{0}_{1}_embedding_matrix.dat'.format(d_type, str(embed_dim))
+    embedding_matrix_file_name = './tmp/{0}_{1}_embedding_matrix.dat'.format(d_type, str(embed_dim))
     if os.path.exists(embedding_matrix_file_name):
         print('loading embedding_matrix:', embedding_matrix_file_name)
         embedding_matrix = pickle.load(open(embedding_matrix_file_name, 'rb'))
     else:
         print('loading word vectors...')
         embedding_matrix = np.zeros((len(word2idx), embed_dim))  # idx 0-3 are all-zeros
-        fname = config.vec_path
+        fname = opt.vec_path
         word2vec = load_word_vec(fname, word2idx=word2idx)
         print('building embedding_matrix:', embedding_matrix_file_name)
         for word, i in word2idx.items():

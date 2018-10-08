@@ -2,14 +2,15 @@ import re
 import jieba
 import numpy as np
 
-import config
+from config import opt
 
 
 class Content:
-    def __init__(self, content, vocab, is_reply=False):
+    def __init__(self, args, content, vocab, is_reply=False):
         """
         :param content: dict
         """
+        self.args = args
         self.original_text = content['original_text']
         self.tokens = list(jieba.cut(self.original_text, cut_all=False))
         self.t = content['t']
@@ -25,11 +26,11 @@ class Content:
         self.province = int(content['province'])
 
         if is_reply:
-            self.original_text_data = self.pad(vocab.sen2id(self.tokens), config.max_document_len)
+            self.original_text_data = self.pad(vocab.sen2id(self.tokens), opt.max_document_len)
         else:
-            self.original_text_data = self.pad(vocab.sen2id(self.tokens), config.max_document_len)
-        self.user_descri_data = self.pad(vocab.sen2id(self.user_description), config.max_user_description_len)
-        self.veri_reason_data = self.pad(vocab.sen2id(self.verified_reason), config.max_verified_reason_len)
+            self.original_text_data = self.pad(vocab.sen2id(self.tokens), opt.max_document_len)
+        self.user_descri_data = self.pad(vocab.sen2id(self.user_description), opt.max_user_description_len)
+        self.veri_reason_data = self.pad(vocab.sen2id(self.verified_reason), opt.max_verified_reason_len)
 
     def num_url(self):
         url = re.findall('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+',self.original_text )
@@ -51,7 +52,7 @@ class Content:
     @staticmethod
     def pad(sen_ids, sen_len):
         if len(sen_ids) < sen_len:
-            sen_ids = sen_ids + [config.pad_idx] * (sen_len - len(sen_ids))
+            sen_ids = sen_ids + [opt.pad_idx] * (sen_len - len(sen_ids))
         else:
             sen_ids = sen_ids[:sen_len]
         return sen_ids

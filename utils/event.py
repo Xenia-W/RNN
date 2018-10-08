@@ -4,13 +4,14 @@ from utils.content import Content
 
 
 class Event:
-    def __init__(self, file, label=0, vocab=None):
+    def __init__(self, args, file, label=0, vocab=None):
+        self.args = args
         self.vocab = vocab
         self.id = file.split('.')[0].split('/')[-1]
         self.label = label
         # self.all_content = list(Content(json.load(line) for line in open(file)))
-        self.original_content = Content(json.load(open(file))[0], vocab)
-        self.reply_contents = list(Content(dic, vocab, is_reply=True) for dic in json.loads(open(file).read())[1:10000])
+        self.original_content = Content(self.args, json.load(open(file))[0], vocab)
+        self.reply_contents = list(Content(self.args, dic, vocab, is_reply=True) for dic in json.loads(open(file).read())[1:10000])
         # self.data = vocab.sen2id(self.original_content.tokens)+ vocab.sen2id(self.reply.tokens)
         self.len_reply = len(self.reply_contents)
         self.sentence = list(content.tokens for content in [self.original_content] + self.reply_contents)

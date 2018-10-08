@@ -45,7 +45,7 @@ class Model(nn.Module):
 
         loss = (event.label - result)**2
 
-        return output, loss, result
+        return output, loss, result, atten_dist
 
 if __name__ == '__main__':
     model = Model()

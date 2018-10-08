@@ -1,24 +1,21 @@
-import config
 import glob
 import os
 import pickle
 import json
 import jieba
 
-
-from utils.content import Content
-
-
+from config import opt
 
 
 class Vocabulary:
-    def __init__(self, build_vocab=True):
+    def __init__(self, args, build_vocab=True):
+        self.args = args
         self.word2id = {}
         self.id2word = {}
         self.word2cnt = {}
         self.vocab_size = 0
-        self.add_word(config.PAD_TOKEN)
-        self.add_word(config.UNK_TOKEN)
+        self.add_word(opt.PAD_TOKEN)
+        self.add_word(opt.UNK_TOKEN)
 
         if build_vocab:
             print("Building vocabulary from file...")
@@ -42,36 +39,36 @@ class Vocabulary:
             self.word2cnt[word] += 1
 
     def build_from_file(self):
-        if os.path.exists(config.vocab_path):
+        if os.path.exists(opt.vocab_path):
             print("Vocabulary was already built")
             self.load()
             print("Vocabulary size:", self.vocab_size)
         else:
             a = 0
             # from utils.event import Event
-            file_list = glob.glob(config.root + "*.json")
+            file_list = glob.glob(opt.root + "*.json")
             for file in file_list:
                 a = a + 1
                 print("Processing event:", a)
                 document = [list(jieba.cut(dic['original_text'], cut_all=False)) for dic in json.loads(open(file).read())]
                 self.add_document(document)
-            self.reduce(config.vocab_size - 4)
+            self.reduce(self.args.vocab_size - 4)
             self.save()
             print("Vocabulary size:", self.vocab_size)
 
     def save(self):
-        with open(config.vocab_path, 'wb') as f:
+        with open(opt.vocab_path, 'wb') as f:
             pickle.dump([self.word2id, self.id2word, self.word2cnt, self.vocab_size], f)
 
     def load(self):
-        with open(config.vocab_path, 'rb') as f:
+        with open(opt.vocab_path, 'rb') as f:
             self.word2id, self.id2word, self.word2cnt, self.vocab_size = pickle.load(f)
 
     def sen2id(self, sentence):
         sen = []
         for word in sentence:
             if word not in self.word2cnt:
-                sen.append(config.unk_idx)
+                sen.append(opt.unk_idx)
             else:
                 sen.append(self.word2id[word])
         return sen

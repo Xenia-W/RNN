@@ -1,4 +1,5 @@
 # https://github.com/github/gitignore  # offical .gitignore
+*.dat
 .*
 !.gitignore
 *.~
