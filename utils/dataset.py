@@ -5,7 +5,7 @@ from config import opt
 from utils.vocabulary import Vocabulary
 # from utils.batch import Batch
 from utils.event import Event
-random.seed(100)
+
 
 class Dataset:
     def __init__(self, args, mode="train"):
@@ -15,6 +15,7 @@ class Dataset:
 
     def events(self):
         file_list = glob.glob(self.args.root + "*.json")
+        random.seed(100)
         random.shuffle(file_list)
 
         with open(opt.label) as f:
